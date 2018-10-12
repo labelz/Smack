@@ -20,6 +20,8 @@
         </activity>
         <activity android:name=".Controller.LoginActivity">
         </activity>
+        <activity android:name=".CreateUserActivity">
+        </activity>
     </application>
 
 </manifest>
