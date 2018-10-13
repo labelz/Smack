@@ -29,10 +29,22 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     fun createUserBtnClicked(view: View) {
+        var email = createEmailText.text.toString()
+        var password = createPasswordText.text.toString()
+        var userName = createUsernameText.text.toString()
 
-
-        AuthService.registerUser(this, "g@c.com", "asf12e") { complete ->
-
+        AuthService.registerUser(this, email, password) { complete ->
+            if (complete) {
+                AuthService.loginUser(this, email, password) { loginComplete ->
+                    if (complete) {
+                        AuthService.createUser(this, userName, email, userAvartar, avatarColor) { createComplete ->
+                            if (createComplete) {
+                                finish()
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
