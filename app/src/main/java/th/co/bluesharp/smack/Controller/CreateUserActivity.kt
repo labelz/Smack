@@ -1,10 +1,12 @@
-package th.co.bluesharp.smack
+package th.co.bluesharp.smack.Controller
 
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import kotlinx.android.synthetic.main.activity_create_user.*
+import th.co.bluesharp.smack.R
+import th.co.bluesharp.smack.Services.AuthService
 import java.util.*
 
 class CreateUserActivity : AppCompatActivity() {
@@ -27,7 +29,9 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     fun createUserBtnClicked(view: View) {
+        AuthService.registerUser(this, "g@c.com", "asf12e") { complete ->
 
+        }
     }
 
     fun changeImageClicked(view: View) {

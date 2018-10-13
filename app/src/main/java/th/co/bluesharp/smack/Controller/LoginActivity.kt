@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import th.co.bluesharp.smack.CreateUserActivity
 import th.co.bluesharp.smack.R
 
 class LoginActivity : AppCompatActivity() {
