@@ -1,12 +1,16 @@
 package th.co.bluesharp.smack.Controller
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_create_user.*
 import th.co.bluesharp.smack.R
 import th.co.bluesharp.smack.Services.AuthService
+import th.co.bluesharp.smack.Utils.BOARDCAST_USER_DATA_CHANGE
 import java.util.*
 
 class CreateUserActivity : AppCompatActivity() {
@@ -17,6 +21,8 @@ class CreateUserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_user)
+
+        createSpinner.visibility = View.INVISIBLE
     }
 
     fun changeBgBtnClicked(view: View) {
@@ -32,6 +38,7 @@ class CreateUserActivity : AppCompatActivity() {
         var email = createEmailText.text.toString()
         var password = createPasswordText.text.toString()
         var userName = createUsernameText.text.toString()
+        enableSpinner(true)
 
         AuthService.registerUser(this, email, password) { complete ->
             if (complete) {
@@ -40,12 +47,38 @@ class CreateUserActivity : AppCompatActivity() {
                         AuthService.createUser(this, userName, email, userAvartar, avatarColor) { createComplete ->
                             if (createComplete) {
                                 finish()
-                            }
+                                enableSpinner(false)
+                                var userDataChange = Intent(BOARDCAST_USER_DATA_CHANGE)
+                                LocalBroadcastManager.getInstance(this).sendBroadcast(userDataChange)
+                            } else
+                                errorToast()
                         }
-                    }
+                    } else
+                        errorToast()
                 }
-            }
+            } else
+                errorToast()
         }
+    }
+
+    fun errorToast() {
+        Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show()
+        enableSpinner(false)
+    }
+
+    fun enableSpinner(enable: Boolean) {
+        if (enable) {
+            createSpinner.visibility = View.VISIBLE
+            createUserBtn.isEnabled = false
+            createUserImage.isEnabled = false
+            changeBgBtn.isEnabled = false
+        } else {
+            createSpinner.visibility = View.INVISIBLE
+            createUserBtn.isEnabled = true
+            createUserImage.isEnabled = true
+            changeBgBtn.isEnabled = true
+        }
+
     }
 
     fun changeImageClicked(view: View) {
@@ -61,4 +94,5 @@ class CreateUserActivity : AppCompatActivity() {
         createUserImage.setImageResource(resorceId)
 
     }
+
 }
