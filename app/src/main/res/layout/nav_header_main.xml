@@ -9,8 +9,8 @@
         android:gravity="bottom" android:id="@+id/linearLayout" tools:layout_editor_absoluteY="81dp">
 
     <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
             app:srcCompat="@drawable/profiledefault"
             android:contentDescription="@string/nav_header_desc"
@@ -27,7 +27,7 @@
             android:id="@+id/userNameNavHeader"
             tools:text="Achira" app:layout_constraintStart_toEndOf="@+id/userImageNavHeader"
             android:layout_marginStart="8dp" app:layout_constraintTop_toTopOf="@+id/userImageNavHeader"
-    />
+            android:text="Achira"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -36,7 +36,7 @@
             tools:text="achira@ggg.com"
             app:layout_constraintTop_toBottomOf="@+id/userNameNavHeader"
             app:layout_constraintStart_toEndOf="@+id/userImageNavHeader"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="8dp" android:text="achira@ggg.com"/>
     <Button
             android:text="LOGIN"
             android:layout_width="wrap_content"

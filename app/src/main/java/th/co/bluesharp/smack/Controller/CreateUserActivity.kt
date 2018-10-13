@@ -40,16 +40,18 @@ class CreateUserActivity : AppCompatActivity() {
         var userName = createUsernameText.text.toString()
         enableSpinner(true)
 
-        AuthService.registerUser(this, email, password) { complete ->
-            if (complete) {
+        AuthService.registerUser(this, email, password) { registerComplete ->
+            if (registerComplete) {
                 AuthService.loginUser(this, email, password) { loginComplete ->
-                    if (complete) {
+                    if (loginComplete) {
                         AuthService.createUser(this, userName, email, userAvartar, avatarColor) { createComplete ->
                             if (createComplete) {
-                                finish()
+//                                println("name ${UserDataService.name}")
+//                                println("email ${UserDataService.email}")
                                 enableSpinner(false)
-                                var userDataChange = Intent(BOARDCAST_USER_DATA_CHANGE)
+                                val userDataChange = Intent(BOARDCAST_USER_DATA_CHANGE)
                                 LocalBroadcastManager.getInstance(this).sendBroadcast(userDataChange)
+                                finish()
                             } else
                                 errorToast()
                         }

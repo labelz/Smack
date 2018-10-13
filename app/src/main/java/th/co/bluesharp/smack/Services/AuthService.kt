@@ -18,6 +18,7 @@ object AuthService {
     var userEmail = ""
     var authToken = ""
 
+
     fun registerUser(context: Context, email: String, password: String, complete: (Boolean) -> Unit) {
 
         val jsonBody = JSONObject()
@@ -25,10 +26,10 @@ object AuthService {
         jsonBody.put("password", password)
 
         val requestBody = jsonBody.toString()
-        println(requestBody)
+//        println(requestBody)
 
         val registerRequest = object : StringRequest(Method.POST, URL_REGISTER, Response.Listener { response ->
-            println(response)
+            //            println(response)
             complete(true)
         }, Response.ErrorListener { error ->
             Log.d("ERROR", "Could not register user:${error}")
@@ -54,18 +55,19 @@ object AuthService {
 
         val requestBody = jsonBody.toString()
 
-        val request = object : JsonObjectRequest(Method.POST, URL_LOGIN, null, Response.Listener { response ->
+        val request2 = object : JsonObjectRequest(Method.POST, URL_LOGIN, null, Response.Listener { response ->
             //            println(response)
             try {
                 authToken = response.getString("token")
                 userEmail = response.getString("user")
                 isLoggedIn = true
+                complete(true)
             } catch (e: JSONException) {
                 Log.d("ERROR", "EXC: ${e.localizedMessage}")
                 complete(false)
             }
 
-            complete(true)
+
         }, Response.ErrorListener { error ->
             Log.d("ERROR", "Could not login user:${error}")
             complete(false)
@@ -79,7 +81,7 @@ object AuthService {
             }
         }
 
-        Volley.newRequestQueue(context).add(request)
+        Volley.newRequestQueue(context).add(request2)
     }
 
     fun createUser(context: Context, name: String, email: String, avatarName: String, avatarColor: String, complete: (Boolean) -> Unit) {
@@ -91,8 +93,8 @@ object AuthService {
 
         val requestBody = jsonBody.toString()
 
-        val request = object : JsonObjectRequest(Method.POST, URL_CREATE_USER, null, Response.Listener { response ->
-            //            println(response)
+        val request3 = object : JsonObjectRequest(Method.POST, URL_CREATE_USER, null, Response.Listener { response ->
+            //                        println(response)
             try {
                 UserDataService.name = response.getString("name")
                 UserDataService.email = response.getString("email")
@@ -105,7 +107,7 @@ object AuthService {
                 complete(false)
             }
 
-            complete(true)
+//            complete(true)
         }, Response.ErrorListener { error ->
             Log.d("ERROR", "Could not create user:${error}")
             complete(false)
@@ -119,13 +121,13 @@ object AuthService {
             }
 
             override fun getHeaders(): MutableMap<String, String> {
-                var header = HashMap<String, String>()
+                val header = HashMap<String, String>()
                 header.put("Authorization", "Bearer ${authToken}")
                 return header
             }
         }
 
-        Volley.newRequestQueue(context).add(request)
+        Volley.newRequestQueue(context).add(request3)
 
     }
 }
