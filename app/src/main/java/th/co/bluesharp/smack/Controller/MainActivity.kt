@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import io.socket.client.IO
 import io.socket.emitter.Emitter
@@ -31,6 +32,13 @@ class MainActivity : AppCompatActivity() {
 
     val socket = IO.socket(SOCKET_URL)
 
+    lateinit var channelAdapter: ArrayAdapter<Channel>
+
+    private fun setupAdapter() {
+        channelAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
+        channel_list.adapter = channelAdapter
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -45,11 +53,12 @@ class MainActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(BOARDCAST_USER_DATA_CHANGE))
         socket.connect()
         socket.on("channelCreated", onNewChannel)
+        setupAdapter()
 
     }
 
     override fun onResume() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(BOARDCAST_USER_DATA_CHANGE))
+//        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(BOARDCAST_USER_DATA_CHANGE))
         super.onResume()
 
     }
@@ -61,10 +70,10 @@ class MainActivity : AppCompatActivity() {
             val channelId = args[2] as String
             val channel = Channel(channelName, channelDesc, channelId)
             MessageService.channels.add(channel)
-
-            println(channelName)
-            println(channelDesc)
-            println(channelId)
+            channelAdapter.notifyDataSetChanged()
+//            println(channelName)
+//            println(channelDesc)
+//            println(channelId)
         }
     }
 
@@ -75,7 +84,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val userDataChangeReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
+        override fun onReceive(context: Context, intent: Intent?) {
             if (AuthService.isLoggedIn) {
 //                println("login ${UserDataService.name}")
                 userNameNavHeader.text = UserDataService.name
@@ -85,6 +94,13 @@ class MainActivity : AppCompatActivity() {
                 userImageNavHeader.setImageResource(resourceId)
                 loginBtnNavHeader.text = "LOGOUT"
                 userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
+
+                MessageService.getChannel(context) { complete ->
+                    if (complete) {
+                        channelAdapter.notifyDataSetChanged()
+                    }
+
+                }
             }
 
         }
@@ -99,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun loginBtnNavClicked(view: View){
+    fun loginBtnNavClicked(view: View) {
         if (AuthService.isLoggedIn) {
             UserDataService.logout()
             userNameNavHeader.text = "Login"
@@ -114,7 +130,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun addBtnNavClicked(view:View){
+    fun addBtnNavClicked(view: View) {
         if (AuthService.isLoggedIn) {
             val builder = AlertDialog.Builder(this)
             val dialog = layoutInflater.inflate(R.layout.add_channel_diag, null)
@@ -131,7 +147,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun sendMsgBtnClicked(view:View){
+    fun sendMsgBtnClicked(view: View) {
 
     }
 
@@ -142,7 +158,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
 
 
 }
