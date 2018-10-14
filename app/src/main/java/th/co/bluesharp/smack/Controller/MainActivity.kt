@@ -15,11 +15,14 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import io.socket.client.IO
+import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
+import th.co.bluesharp.smack.Model.Channel
 import th.co.bluesharp.smack.R
 import th.co.bluesharp.smack.Services.AuthService
+import th.co.bluesharp.smack.Services.MessageService
 import th.co.bluesharp.smack.Services.UserDataService
 import th.co.bluesharp.smack.Utils.BOARDCAST_USER_DATA_CHANGE
 import th.co.bluesharp.smack.Utils.SOCKET_URL
@@ -40,23 +43,35 @@ class MainActivity : AppCompatActivity() {
         toggle.syncState()
 
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(BOARDCAST_USER_DATA_CHANGE))
+        socket.connect()
+        socket.on("channelCreated", onNewChannel)
 
     }
 
     override fun onResume() {
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(BOARDCAST_USER_DATA_CHANGE))
         super.onResume()
-        socket.connect()
+
+    }
+
+    private val onNewChannel = Emitter.Listener { args ->
+        runOnUiThread {
+            val channelName = args[0] as String
+            val channelDesc = args[1] as String
+            val channelId = args[2] as String
+            val channel = Channel(channelName, channelDesc, channelId)
+            MessageService.channels.add(channel)
+
+            println(channelName)
+            println(channelDesc)
+            println(channelId)
+        }
     }
 
     override fun onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
         socket.disconnect()
         super.onDestroy()
-    }
-
-    override fun onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
-        super.onPause()
     }
 
     private val userDataChangeReceiver = object : BroadcastReceiver() {
