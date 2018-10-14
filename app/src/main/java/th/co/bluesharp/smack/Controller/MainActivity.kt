@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             userEmailNavHeader.text = ""
             loginBtnNavHeader.text = "Login"
             userImageNavHeader.setImageResource(R.drawable.profiledefault)
-            userImageNavHeader.setBackgroundColor(UserDataService.returnAvatarColor())
+            userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
         } else {
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)

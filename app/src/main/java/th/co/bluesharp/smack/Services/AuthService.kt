@@ -9,6 +9,7 @@ import com.android.volley.toolbox.Volley
 import org.json.JSONException
 import org.json.JSONObject
 import th.co.bluesharp.smack.Utils.URL_CREATE_USER
+import th.co.bluesharp.smack.Utils.URL_FIND_USER
 import th.co.bluesharp.smack.Utils.URL_LOGIN
 import th.co.bluesharp.smack.Utils.URL_REGISTER
 
@@ -129,5 +130,39 @@ object AuthService {
 
         Volley.newRequestQueue(context).add(request3)
 
+    }
+
+    fun findUser(context: Context, complete: (Boolean) -> Unit) {
+        val request = object : JsonObjectRequest(Method.GET, "${URL_FIND_USER}${userEmail}", null, Response.Listener { response ->
+            //                        println(response)
+            try {
+                UserDataService.name = response.getString("name")
+                UserDataService.email = response.getString("email")
+                UserDataService.avatarColor = response.getString("avatarColor")
+                UserDataService.avatarName = response.getString("avatarName")
+                UserDataService.id = response.getString("_id")
+                complete(true)
+            } catch (e: JSONException) {
+                Log.d("ERROR", "EXC: ${e.localizedMessage}")
+                complete(false)
+            }
+
+//            complete(true)
+        }, Response.ErrorListener { error ->
+            Log.d("ERROR", "Could not create user:${error}")
+            complete(false)
+        }) {
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
+            }
+
+
+            override fun getHeaders(): MutableMap<String, String> {
+                val header = HashMap<String, String>()
+                header.put("Authorization", "Bearer ${authToken}")
+                return header
+            }
+        }
+        Volley.newRequestQueue(context).add(request)
     }
 }
