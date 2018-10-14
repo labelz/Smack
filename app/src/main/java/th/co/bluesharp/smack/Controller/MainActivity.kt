@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import io.socket.client.IO
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
@@ -21,14 +22,16 @@ import th.co.bluesharp.smack.R
 import th.co.bluesharp.smack.Services.AuthService
 import th.co.bluesharp.smack.Services.UserDataService
 import th.co.bluesharp.smack.Utils.BOARDCAST_USER_DATA_CHANGE
+import th.co.bluesharp.smack.Utils.SOCKET_URL
 
 class MainActivity : AppCompatActivity() {
+
+    val socket = IO.socket(SOCKET_URL)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        hideKeyboard()
 
 
         val toggle = ActionBarDrawerToggle(
@@ -38,6 +41,22 @@ class MainActivity : AppCompatActivity() {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(BOARDCAST_USER_DATA_CHANGE))
 
+    }
+
+    override fun onResume() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(BOARDCAST_USER_DATA_CHANGE))
+        super.onResume()
+        socket.connect()
+    }
+
+    override fun onDestroy() {
+        socket.disconnect()
+        super.onDestroy()
+    }
+
+    override fun onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
+        super.onPause()
     }
 
     private val userDataChangeReceiver = object : BroadcastReceiver() {
@@ -89,6 +108,7 @@ class MainActivity : AppCompatActivity() {
                         val nameTextField = dialog.findViewById<EditText>(R.id.addChannelName)
                         val descTextField = dialog.findViewById<EditText>(R.id.addChannelDescription)
                         hideKeyboard()
+                        socket.emit("newChannel", nameTextField.text.toString(), descTextField.text.toString())
 
                     }.setNegativeButton("Cancel") { dialogInterface, i ->
                         hideKeyboard()
