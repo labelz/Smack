@@ -55,6 +55,10 @@ class MainActivity : AppCompatActivity() {
         socket.on("channelCreated", onNewChannel)
         setupAdapter()
 
+        if (App.pref.isLoggedIn) {
+            AuthService.findUser(this) {}
+        }
+
     }
 
     override fun onResume() {
@@ -85,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
     private val userDataChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
-            if (AuthService.isLoggedIn) {
+            if (App.pref.isLoggedIn) {
 //                println("login ${UserDataService.name}")
                 userNameNavHeader.text = UserDataService.name
 //                userNameNavHeader.text = "test Something"
@@ -116,7 +120,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loginBtnNavClicked(view: View) {
-        if (AuthService.isLoggedIn) {
+        if (App.pref.isLoggedIn) {
             UserDataService.logout()
             userNameNavHeader.text = "Login"
             userEmailNavHeader.text = ""
@@ -131,7 +135,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addBtnNavClicked(view: View) {
-        if (AuthService.isLoggedIn) {
+        if (App.pref.isLoggedIn) {
             val builder = AlertDialog.Builder(this)
             val dialog = layoutInflater.inflate(R.layout.add_channel_diag, null)
             builder.setView(dialog)

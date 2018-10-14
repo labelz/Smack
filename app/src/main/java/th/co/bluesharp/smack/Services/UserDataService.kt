@@ -1,6 +1,7 @@
 package th.co.bluesharp.smack.Services
 
 import android.graphics.Color
+import th.co.bluesharp.smack.Controller.App
 import java.util.*
 
 object UserDataService {
@@ -31,8 +32,8 @@ object UserDataService {
         avatarName = ""
         email = ""
         name = ""
-        AuthService.authToken = ""
-        AuthService.userEmail = ""
-        AuthService.isLoggedIn = false
+        App.pref.authToken = ""
+        App.pref.userEmail = ""
+        App.pref.isLoggedIn = false
     }
 }
