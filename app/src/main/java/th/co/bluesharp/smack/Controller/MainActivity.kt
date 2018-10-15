@@ -11,6 +11,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -21,6 +22,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
+import th.co.bluesharp.smack.Adapters.MessageAdapter
 import th.co.bluesharp.smack.Model.Channel
 import th.co.bluesharp.smack.Model.Message
 import th.co.bluesharp.smack.R
@@ -37,9 +39,16 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var channelAdapter: ArrayAdapter<Channel>
 
+    lateinit var messageAdapter: MessageAdapter
+
     private fun setupAdapter() {
         channelAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
         channel_list.adapter = channelAdapter
+
+        messageAdapter = MessageAdapter(this, MessageService.messages)
+        msgListView.adapter = messageAdapter
+        val layoutManager = LinearLayoutManager(this)
+        msgListView.layoutManager = layoutManager
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,6 +102,9 @@ class MainActivity : AppCompatActivity() {
                     val messageObj = Message(message, userName, channelId, userAvatar, avatarColor, id, timeStamp)
                     MessageService.messages.add(messageObj)
                     println(messageObj.message)
+                    messageAdapter.notifyDataSetChanged()
+                    msgListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
+
                 }
             }
 
@@ -135,8 +147,9 @@ class MainActivity : AppCompatActivity() {
                 userEmailNavHeader.text = UserDataService.email
                 val resourceId = resources.getIdentifier(UserDataService.avatarName, "drawable", packageName)
                 userImageNavHeader.setImageResource(resourceId)
+                userImageNavHeader.setBackgroundColor(UserDataService.returnAvatarColor(UserDataService.avatarColor))
                 loginBtnNavHeader.text = "LOGOUT"
-                userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
+
 
                 MessageService.getChannel() { complete ->
                     if (complete) {
@@ -160,7 +173,10 @@ class MainActivity : AppCompatActivity() {
         if (selectedChannel != null) {
             MessageService.getMessage(selectedChannel!!.id) { complete ->
                 if (complete) {
-
+                    messageAdapter.notifyDataSetChanged()
+                    if (messageAdapter.itemCount > 0) {
+                        msgListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
+                    }
                 }
 
             }

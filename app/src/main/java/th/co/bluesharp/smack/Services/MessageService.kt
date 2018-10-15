@@ -15,6 +15,7 @@ object MessageService {
     val messages = ArrayList<Message>()
 
     fun getChannel(complete: (Boolean) -> Unit) {
+        clearChannel()
         val request = object : JsonArrayRequest(Method.GET, URL_GET_CHANNEL, null, Response.Listener { response ->
             try {
 //                channels = ArrayList<Channel>()
