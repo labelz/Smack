@@ -1,6 +1,5 @@
 package th.co.bluesharp.smack.Services
 
-import android.content.Context
 import android.util.Log
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
@@ -12,7 +11,7 @@ import th.co.bluesharp.smack.Utils.URL_GET_CHANNEL
 object MessageService {
     val channels = ArrayList<Channel>()
 
-    fun getChannel(context: Context, complete: (Boolean) -> Unit) {
+    fun getChannel(complete: (Boolean) -> Unit) {
         val request = object : JsonArrayRequest(Method.GET, URL_GET_CHANNEL, null, Response.Listener { response ->
             try {
 //                channels = ArrayList<Channel>()

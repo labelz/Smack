@@ -40,11 +40,11 @@ class CreateUserActivity : AppCompatActivity() {
         var userName = createUsernameText.text.toString()
         enableSpinner(true)
 
-        AuthService.registerUser(this, email, password) { registerComplete ->
+        AuthService.registerUser(email, password) { registerComplete ->
             if (registerComplete) {
-                AuthService.loginUser(this, email, password) { loginComplete ->
+                AuthService.loginUser(email, password) { loginComplete ->
                     if (loginComplete) {
-                        AuthService.createUser(this, userName, email, userAvartar, avatarColor) { createComplete ->
+                        AuthService.createUser(userName, email, userAvartar, avatarColor) { createComplete ->
                             if (createComplete) {
 //                                println("name ${UserDataService.name}")
 //                                println("email ${UserDataService.email}")

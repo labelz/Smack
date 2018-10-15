@@ -19,6 +19,7 @@ import io.socket.client.IO
 import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import th.co.bluesharp.smack.Model.Channel
 import th.co.bluesharp.smack.R
@@ -31,6 +32,7 @@ import th.co.bluesharp.smack.Utils.SOCKET_URL
 class MainActivity : AppCompatActivity() {
 
     val socket = IO.socket(SOCKET_URL)
+    var selectedChannel: Channel? = null
 
     lateinit var channelAdapter: ArrayAdapter<Channel>
 
@@ -57,6 +59,12 @@ class MainActivity : AppCompatActivity() {
 
         if (App.pref.isLoggedIn) {
             AuthService.findUser(this) {}
+        }
+
+        channel_list.setOnItemClickListener { _, _, i, _ ->
+            selectedChannel = MessageService.channels[i]
+            drawer_layout.closeDrawer(GravityCompat.START)
+            updateWithChannel()
         }
 
     }
@@ -99,9 +107,14 @@ class MainActivity : AppCompatActivity() {
                 loginBtnNavHeader.text = "LOGOUT"
                 userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
 
-                MessageService.getChannel(context) { complete ->
+                MessageService.getChannel() { complete ->
                     if (complete) {
-                        channelAdapter.notifyDataSetChanged()
+                        if (MessageService.channels.count() > 0) {
+                            selectedChannel = MessageService.channels[0]
+                            channelAdapter.notifyDataSetChanged()
+                            updateWithChannel()
+                        }
+
                     }
 
                 }
@@ -109,6 +122,11 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+    }
+
+    fun updateWithChannel() {
+        mainChannelName.text = "#${selectedChannel?.name}"
+        ""
     }
 
     override fun onBackPressed() {

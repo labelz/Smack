@@ -30,7 +30,7 @@ class LoginActivity : AppCompatActivity() {
         enableSpinner(true)
         val email = loginEmailText.text.toString()
         val password = loginPasswordText.text.toString()
-        AuthService.loginUser(this, email, password) { complete ->
+        AuthService.loginUser(email, password) { complete ->
             if (complete) {
                 AuthService.findUser(this) { foundUser ->
                     if (foundUser) {
