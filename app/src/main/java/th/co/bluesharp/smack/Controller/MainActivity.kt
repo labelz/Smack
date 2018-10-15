@@ -78,33 +78,46 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val onNewMessage = Emitter.Listener { args ->
-        runOnUiThread {
-            val message = args[0] as String
-            val userId = args[1] as String
-            val channelId = args[2] as String
-            val userName = args[3] as String
-            val userAvatar = args[4] as String
-            val avatarColor = args[5] as String
-            val id = args[6] as String
-            val timeStamp = args[7] as String
-            val messageObj = Message(message, userName, channelId, userAvatar, avatarColor, id, timeStamp)
-            MessageService.messages.add(messageObj)
-            println(messageObj.message)
+        if (App.pref.isLoggedIn) {
+            runOnUiThread {
+
+                val channelId = args[2] as String
+                if (selectedChannel?.id == channelId) {
+                    val message = args[0] as String
+                    val userId = args[1] as String
+                    val userName = args[3] as String
+                    val userAvatar = args[4] as String
+                    val avatarColor = args[5] as String
+                    val id = args[6] as String
+                    val timeStamp = args[7] as String
+                    val messageObj = Message(message, userName, channelId, userAvatar, avatarColor, id, timeStamp)
+                    MessageService.messages.add(messageObj)
+                    println(messageObj.message)
+                }
+            }
+
         }
+
     }
 
     private val onNewChannel = Emitter.Listener { args ->
-        runOnUiThread {
-            val channelName = args[0] as String
-            val channelDesc = args[1] as String
-            val channelId = args[2] as String
-            val channel = Channel(channelName, channelDesc, channelId)
-            MessageService.channels.add(channel)
-            channelAdapter.notifyDataSetChanged()
+        if (App.pref.isLoggedIn) {
+            runOnUiThread {
+                val channelName = args[0] as String
+                val channelDesc = args[1] as String
+                val channelId = args[2] as String
+                val channel = Channel(channelName, channelDesc, channelId)
+
+                MessageService.channels.add(channel)
+                channelAdapter.notifyDataSetChanged()
+
+
 //            println(channelName)
 //            println(channelDesc)
 //            println(channelId)
+            }
         }
+
     }
 
     override fun onDestroy() {
@@ -144,7 +157,14 @@ class MainActivity : AppCompatActivity() {
 
     fun updateWithChannel() {
         mainChannelName.text = "#${selectedChannel?.name}"
-        ""
+        if (selectedChannel != null) {
+            MessageService.getMessage(selectedChannel!!.id) { complete ->
+                if (complete) {
+
+                }
+
+            }
+        }
     }
 
     override fun onBackPressed() {

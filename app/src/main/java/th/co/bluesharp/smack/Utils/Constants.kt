@@ -7,5 +7,6 @@ const val URL_LOGIN = "${BASE_URL}/account/login"
 const val URL_CREATE_USER = "${BASE_URL}/user/add"
 const val URL_FIND_USER = "${BASE_URL}/user/byEmail/"
 const val URL_GET_CHANNEL = "${BASE_URL}/channel"
+const val URL_GET_MESSAGES = "${BASE_URL}/message/byChannel/"
 
 const val BOARDCAST_USER_DATA_CHANGE = "bc_user_data_change"
