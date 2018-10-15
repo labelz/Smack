@@ -6,10 +6,12 @@ import com.android.volley.toolbox.JsonArrayRequest
 import org.json.JSONException
 import th.co.bluesharp.smack.Controller.App
 import th.co.bluesharp.smack.Model.Channel
+import th.co.bluesharp.smack.Model.Message
 import th.co.bluesharp.smack.Utils.URL_GET_CHANNEL
 
 object MessageService {
     val channels = ArrayList<Channel>()
+    val messages = ArrayList<Message>()
 
     fun getChannel(complete: (Boolean) -> Unit) {
         val request = object : JsonArrayRequest(Method.GET, URL_GET_CHANNEL, null, Response.Listener { response ->

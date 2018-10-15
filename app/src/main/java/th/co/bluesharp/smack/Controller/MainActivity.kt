@@ -22,6 +22,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import th.co.bluesharp.smack.Model.Channel
+import th.co.bluesharp.smack.Model.Message
 import th.co.bluesharp.smack.R
 import th.co.bluesharp.smack.Services.AuthService
 import th.co.bluesharp.smack.Services.MessageService
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(BOARDCAST_USER_DATA_CHANGE))
         socket.connect()
         socket.on("channelCreated", onNewChannel)
+        socket.on("messageCreated", onNewMessage)
         setupAdapter()
 
         if (App.pref.isLoggedIn) {
@@ -73,6 +75,22 @@ class MainActivity : AppCompatActivity() {
 //        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(BOARDCAST_USER_DATA_CHANGE))
         super.onResume()
 
+    }
+
+    private val onNewMessage = Emitter.Listener { args ->
+        runOnUiThread {
+            val message = args[0] as String
+            val userId = args[1] as String
+            val channelId = args[2] as String
+            val userName = args[3] as String
+            val userAvatar = args[4] as String
+            val avatarColor = args[5] as String
+            val id = args[6] as String
+            val timeStamp = args[7] as String
+            val messageObj = Message(message, userName, channelId, userAvatar, avatarColor, id, timeStamp)
+            MessageService.messages.add(messageObj)
+            println(messageObj.message)
+        }
     }
 
     private val onNewChannel = Emitter.Listener { args ->
@@ -170,7 +188,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendMsgBtnClicked(view: View) {
+        if (App.pref.isLoggedIn && msgTextField.text.isNotEmpty() && selectedChannel != null) {
+            val userId = UserDataService.id
+            val channelId = selectedChannel!!.id
+            socket.emit("newMessage", msgTextField.text.toString(), userId, channelId, UserDataService.name, UserDataService.avatarName, UserDataService.avatarColor)
+            msgTextField.text.clear()
+            hideKeyboard()
 
+        }
     }
 
     fun hideKeyboard() {
